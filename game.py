@@ -56,7 +56,7 @@ class Game:
         if (cur_num not in self.number_set):
             return False, "The second character is not a number from 1-8."
 
-        return True, ""
+        return True, None
     
     def translate_input(self, cur_pos):
         cur_y = self.character_dict[cur_pos[0].upper()]
@@ -70,7 +70,7 @@ class Game:
         cur_coord = self.translate_input(cur_pos)
         if (cur_coord in self.game_pieces):
             if (self.game_pieces[cur_coord].color == self.turn):
-                return "", cur_coord
+                return None, cur_coord
                 #print("You selected {} {} located at {}, {}".format(self.game_pieces[cur_coord].color, self.game_pieces[cur_coord].label, self.game_pieces[cur_coord].pos_x, self.game_pieces[cur_coord].pos_y))
             else:
                 return "Not your piece.", None
@@ -82,16 +82,16 @@ class Game:
         if not is_valid:
             return err, None
         new_coord = self.translate_input(new_pos)
-        return "", new_coord
+        return None, new_coord
 
     def get_possible_moves(self, cur_coord, new_coord):
         possible_moves = self.game_pieces[cur_coord].possible_moves(self.game_pieces)
         #print(possible_moves)
         #print(new_coord)
         # IF NEW_COORD ISN'T IN POSSIBLE_MOVES LIST...
-        if new_coord not in possible_moves:
+        if not possible_moves or new_coord not in possible_moves:
             return "Invalid Move. Please try again."
-        return ""
+        return None
 
     def move_piece(self, cur_coord, new_coord):
         game_piece = self.game_pieces[cur_coord]
@@ -100,11 +100,12 @@ class Game:
         self.game_pieces[new_coord] = game_piece
         self.game_board.update_board(cur_coord,new_coord)
         self.game_board.render_board()
+        print()
 
     def game_loop(self, cur_coord, new_coord):
         # GET POSSIBLE MOVES FOR CURRENT PIECE
         err = self.get_possible_moves(cur_coord, new_coord)
-        if err != "":
+        if err:
             return err
             
         # MOVE GAME PIECE FROM CURRENT TO NEW POSITION
@@ -113,4 +114,4 @@ class Game:
         # SWITCH COLOR
         self.turn = "Black" if self.turn == "White" else "White"
 
-        return ""
+        return None
