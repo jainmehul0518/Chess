@@ -1,0 +1,9 @@
+1) Pawn moves one square on initial move - DONE
+2) Pawn moves two squares on initial move - DONE
+3) Pawn moves one square on next move - DONE
+4) Pawn captures opposing Pawn on upper-right - DONE
+5) Pawn captures opposing Pawn on upper-left - DONE
+6) Pawn captures opposing Pawn on lower-right - DONE
+7) Pawn captures opposing Pawn on lower-left - DONE
+8) Pawn can't move to same square as same-side Pawn - DONE
+9) Pawn can't capture opposing Pawn if not on its Diagonal - DONE
