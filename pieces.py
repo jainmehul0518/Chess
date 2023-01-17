@@ -52,6 +52,13 @@ class Pawn(Piece):
         if not self.has_moved and (self.pos_x + (2*move_dir), self.pos_y) not in game_pieces:
             possible_moves.append((self.pos_x + (2*move_dir), self.pos_y))
         
+        diagonal_1 = (self.pos_x + move_dir, self.pos_y + move_dir)
+        diagonal_2 = (self.pos_x + move_dir, self.pos_y - move_dir)
+        if diagonal_1 in game_pieces and game_pieces[diagonal_1].color != self.color:
+            possible_moves.append(diagonal_1)
+        if diagonal_2 in game_pieces and game_pieces[diagonal_2].color != self.color:
+            possible_moves.append(diagonal_2)
+        
         return possible_moves
 
     def move_piece(self, new_pos):

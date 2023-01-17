@@ -86,7 +86,7 @@ class Game:
 
     def get_possible_moves(self, cur_coord, new_coord):
         possible_moves = self.game_pieces[cur_coord].possible_moves(self.game_pieces)
-        #print(possible_moves)
+        print(possible_moves)
         #print(new_coord)
         # IF NEW_COORD ISN'T IN POSSIBLE_MOVES LIST...
         if not possible_moves or new_coord not in possible_moves:
@@ -94,6 +94,8 @@ class Game:
         return None
 
     def move_piece(self, cur_coord, new_coord):
+        if new_coord in self.game_pieces: # remove new_coord key entry if present in game_pieces
+            del self.game_pieces[new_coord]
         game_piece = self.game_pieces[cur_coord]
         game_piece.move_piece(new_coord)
         del self.game_pieces[cur_coord]
