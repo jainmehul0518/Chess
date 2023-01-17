@@ -5,6 +5,7 @@ class Game:
     def __init__(self):
         self.character_dict = dict({'A':0,'B':1,'C':2,'D':3,'E':4,'F':5,'G':6,'H':7})
         self.number_set = set([i+1 for i in range(8)])
+        self.turn = "White" # chess game starts off with White's move
 
         self.game_pieces = dict()
         # Kings
@@ -37,6 +38,9 @@ class Game:
         for i in range(8):
             self.game_pieces[(1,i)] = pieces.Pawn(color="White", pos_x = 1, pos_y = i)
             self.game_pieces[(6,i)] = pieces.Pawn(color="Black", pos_x = 6, pos_y = i)
+
+        self.game_board = render.Board(self.game_pieces)
+        self.game_board.render_board()
     
     def validate_input(self, cur_pos):
         if (len(cur_pos) != 2):
@@ -59,45 +63,54 @@ class Game:
         cur_x = 8 - int(cur_pos[1])
         return (cur_x, cur_y)
 
-    def game_loop(self):
-        game_board = render.Board(self.game_pieces)
-        game_board.render_board()
-
-        while True: # GAME LOOP
-            # GET CURRENT POSITION
-            cur_pos = input("Please enter the position of the piece you want to move as follows: (Letter A-H)(Number 1-8): ")
-            is_valid, err = self.validate_input(cur_pos)
-            if not is_valid:
-                print(err)
-                continue
-            cur_coord = self.translate_input(cur_pos)
-            if (cur_coord in self.game_pieces):
-                print("You selected {} {} located at {}, {}".format(self.game_pieces[cur_coord].color, self.game_pieces[cur_coord].label, self.game_pieces[cur_coord].pos_x, self.game_pieces[cur_coord].pos_y))
+    def get_current_position(self, cur_pos):
+        is_valid, err = self.validate_input(cur_pos)
+        if not is_valid:
+            return err, None
+        cur_coord = self.translate_input(cur_pos)
+        if (cur_coord in self.game_pieces):
+            if (self.game_pieces[cur_coord].color == self.turn):
+                return "", cur_coord
+                #print("You selected {} {} located at {}, {}".format(self.game_pieces[cur_coord].color, self.game_pieces[cur_coord].label, self.game_pieces[cur_coord].pos_x, self.game_pieces[cur_coord].pos_y))
             else:
-                print("No piece exists at that position.")
-                continue
+                return "Not your piece.", None
+        else:
+            return "No piece exists at that position.", None
 
-            # GET NEW POSITION
-            new_pos = input("Please enter the position you want to move the piece to: ")
-            is_valid, err = self.validate_input(new_pos)
-            if not is_valid:
-                print(err)
-                continue
-            new_coord = self.translate_input(new_pos)
+    def get_new_position(self, new_pos):
+        is_valid, err = self.validate_input(new_pos)
+        if not is_valid:
+            return err, None
+        new_coord = self.translate_input(new_pos)
+        return "", new_coord
 
-            # GET POSSIBLE MOVES FOR CURRENT PIECE
-            possible_moves = self.game_pieces[cur_coord].possible_moves(self.game_pieces)
-            print(possible_moves)
-            print(new_coord)
-            # IF NEW_COORD ISN'T IN POSSIBLE_MOVES LIST, RESTART INPUT
-            if new_coord not in possible_moves:
-                print("Invalid Move. Please try again.")
-                continue
-                
-            # MOVE GAME PIECE FROM CURRENT TO NEW POSITION
-            game_piece = self.game_pieces[cur_coord]
-            game_piece.move_piece(new_coord)
-            del self.game_pieces[cur_coord]
-            self.game_pieces[new_coord] = game_piece
-            game_board.update_board(cur_coord,new_coord)
-            game_board.render_board()
+    def get_possible_moves(self, cur_coord, new_coord):
+        possible_moves = self.game_pieces[cur_coord].possible_moves(self.game_pieces)
+        #print(possible_moves)
+        #print(new_coord)
+        # IF NEW_COORD ISN'T IN POSSIBLE_MOVES LIST...
+        if new_coord not in possible_moves:
+            return "Invalid Move. Please try again."
+        return ""
+
+    def move_piece(self, cur_coord, new_coord):
+        game_piece = self.game_pieces[cur_coord]
+        game_piece.move_piece(new_coord)
+        del self.game_pieces[cur_coord]
+        self.game_pieces[new_coord] = game_piece
+        self.game_board.update_board(cur_coord,new_coord)
+        self.game_board.render_board()
+
+    def game_loop(self, cur_coord, new_coord):
+        # GET POSSIBLE MOVES FOR CURRENT PIECE
+        err = self.get_possible_moves(cur_coord, new_coord)
+        if err != "":
+            return err
+            
+        # MOVE GAME PIECE FROM CURRENT TO NEW POSITION
+        self.move_piece(cur_coord, new_coord)
+
+        # SWITCH COLOR
+        self.turn = "Black" if self.turn == "White" else "White"
+
+        return ""

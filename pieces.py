@@ -51,9 +51,9 @@ class Pawn(Piece):
         # if piece hasn't moved in game, can move 2 squares
         if not self.has_moved and (self.pos_x + (2*move_dir), self.pos_y) not in game_pieces:
             possible_moves.append((self.pos_x + (2*move_dir), self.pos_y))
-            self.has_moved = True
         
         return possible_moves
 
     def move_piece(self, new_pos):
         self.pos_x, self.pos_y = new_pos[0], new_pos[1]
+        self.has_moved = True
